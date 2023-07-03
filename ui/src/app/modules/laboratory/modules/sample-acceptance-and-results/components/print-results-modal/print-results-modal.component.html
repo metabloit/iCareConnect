@@ -37,7 +37,7 @@
           id="{{ samplesGroupedByDepartment?.departmentName }}"
         >
           <div class="row">
-            <div class="col-12" style="display: inline-block; width: 66.67%">
+            <div class="col-12" style="width: 100%">
               <h4 style="text-align: center">
                 <b>
                   <img [src]="params?.facility?.logo" height="90" />
@@ -112,7 +112,7 @@
                     </ng-container>
                     <ng-container *ngIf="LISConfigurations?.isLIS">
                       <td><b>Collection Date & Time</b></td>
-                      <td style="font-size: 0.6rem">
+                      <td>
                         {{
                           !LISConfigurations?.isLIS
                             ? (samplesGroupedByDepartment?.samples[0]
@@ -129,7 +129,7 @@
                     <td>
                       <b> Registered On </b>
                     </td>
-                    <td style="font-size: 0.6rem">
+                    <td>
                       {{
                         samplesGroupedByDepartment["samples"][0]?.dateCreated
                           | date: "medium"
@@ -149,7 +149,7 @@
                       </span>
                     </td>
                     <td><b>Laboratory Number</b></td>
-                    <td style="font-size: 0.6rem">
+                    <td>
                       <span
                         *ngFor="
                           let sample of samplesGroupedByDepartment['samples']
@@ -171,7 +171,7 @@
                       <td>
                         <b> Received date & time </b>
                       </td>
-                      <td style="font-size: 0.6rem">
+                      <td>
                         <span>
                           {{
                             samplesGroupedByDepartment?.samples[0]
@@ -383,7 +383,9 @@
                             style="font-size: 0.6rem; margin-bottom: -8px"
                             *ngFor="let diagnosis of params?.diagnoses"
                           >
-                            <b> Diagnosis: {{ diagnosis?.display }} </b>
+                            <b *ngIf="diagnosis?.display">
+                              Diagnosis: {{ diagnosis?.display }}
+                            </b>
                           </p>
                         </ng-container>
                         <p
@@ -507,16 +509,20 @@
                               "
                             >
                               <tr>
-                                <th style="width: 15px">SN</th>
+                                <!-- <th style="width: 15px">SN</th>
                                 <th *ngIf="!LISConfigurations?.isLIS">
                                   Test #
-                                </th>
+                                </th> -->
                                 <th>Test Order</th>
-                                <th>Parameter</th>
-                                <th>Results</th>
-                                <!-- <td>SI Units</td> -->
-                                <th *ngIf="!LISConfigurations?.isLIS">LL</th>
-                                <th *ngIf="!LISConfigurations?.isLIS">UL</th>
+                                <th class="w-50">
+                                  <div class="row">
+                                    <div class="col-md-6">Parameter</div>
+                                    <div class="col-md-3">Results</div>
+                                    <div class="col-md-1">Units</div>
+                                    <div class="col-md-1">LL</div>
+                                    <div class="col-md-1">UL</div>
+                                  </div>
+                                </th>
                                 <th>Remarks</th>
                                 <th *ngIf="!LISConfigurations?.isLIS">
                                   Order date & Time
@@ -540,12 +546,12 @@
                                       'row-alternated': count % 2 !== 0
                                     }"
                                   >
-                                    <td rowspan="2">
+                                    <!-- <td rowspan="2">
                                       {{ count + 1 }}
                                     </td>
                                     <td *ngIf="!LISConfigurations?.isLIS">
                                       {{ order?.order?.orderNumber }}
-                                    </td>
+                                    </td> -->
                                     <td>
                                       {{ order?.order?.concept?.display }}
                                       <br />
@@ -568,112 +574,6 @@
                                             [allocation]="allocation"
                                             [count]="count"
                                             [whatToShow]="'parameter'"
-                                            [parameter]="allocation?.parameter"
-                                            [units]="
-                                              allocation?.parameter?.units
-                                            "
-                                            (remarksData)="onGetRemarks($event)"
-                                          ></app-shared-parameter-results>
-                                        </div>
-                                      </div>
-                                    </td>
-                                    <td>
-                                      <div
-                                        class="w-100"
-                                        *ngIf="
-                                          order?.order?.concept?.setMembers
-                                            ?.length == 0
-                                        "
-                                      >
-                                        <span
-                                          *ngIf="
-                                            order?.testAllocations[0]
-                                              ?.secondSignOff &&
-                                            order?.order?.concept?.lowNormal &&
-                                            order?.order?.concept?.setMembers
-                                              ?.length == 0 &&
-                                            order?.order?.concept?.lowNormal >
-                                              order?.testAllocations[0]
-                                                ?.results[
-                                                order?.testAllocations[0]
-                                                  ?.results?.length - 1
-                                              ]?.valueNumeric
-                                          "
-                                          ><img
-                                            src="assets/images/arrowdownred.png"
-                                            height="8px"
-                                        /></span>
-                                        <span
-                                          *ngIf="
-                                            order?.testAllocations[0]
-                                              ?.secondSignOff &&
-                                            order?.order?.concept?.setMembers
-                                              ?.length == 0 &&
-                                            order?.order?.concept?.hiNormal &&
-                                            order?.testAllocations[0]?.results[
-                                              order?.testAllocations[0]?.results
-                                                ?.length - 1
-                                            ]?.valueNumeric >
-                                              order?.concept?.hiNormal
-                                          "
-                                          ><img
-                                            src="assets/images/arrowupred.png"
-                                            height="8px"
-                                        /></span>
-
-                                        <span
-                                          *ngIf="
-                                            order?.order?.concept?.setMembers
-                                              ?.length == 0 &&
-                                            order?.testAllocations[0]
-                                              ?.results[0]?.value
-                                          "
-                                        >
-                                          {{
-                                            order?.order?.concept?.answers
-                                              ?.length == 0
-                                              ? order?.testAllocations[0]
-                                                  ?.results[
-                                                  order?.testAllocations[0]
-                                                    ?.results?.length - 1
-                                                ]?.value
-                                              : order?.order?.concept
-                                                  ?.keyedAnswers[
-                                                  order?.testAllocations[0]
-                                                    ?.results[
-                                                    order?.testAllocations[0]
-                                                      ?.results?.length - 1
-                                                  ]?.value
-                                                ]?.display
-                                          }}
-                                        </span>
-                                        <span
-                                          class="text-warning"
-                                          *ngIf="
-                                            !order?.testAllocations[0]
-                                              ?.results[0]?.value
-                                          "
-                                        >
-                                          Processing ..
-                                        </span>
-                                      </div>
-                                      <div
-                                        class="w-100"
-                                        *ngIf="
-                                          order?.testAllocations?.length > 0
-                                        "
-                                      >
-                                        <div
-                                          *ngFor="
-                                            let allocation of order?.testAllocations;
-                                            let count = index
-                                          "
-                                        >
-                                          <app-shared-parameter-results
-                                            [order]="order"
-                                            [allocation]="allocation"
-                                            [whatToShow]="'result'"
-                                            [count]="count"
                                             [parameter]="allocation?.parameter"
                                             [units]="
                                               allocation?.parameter?.units
@@ -840,31 +740,10 @@
                                     }"
                                   >
                                     <td colspan="100%">
-                                      <div
-                                        *ngIf="
-                                          sample?.authorizationInfo &&
-                                          sample?.authorizationInfo[0]
-                                        "
-                                      >
-                                        <b>Authorised By: </b
-                                        >{{
-                                          sample?.authorizationInfo[0]?.name
-                                        }}
-                                        <b class="ml-4">On: </b
-                                        >{{
-                                          sample?.authorizationInfo[0]
-                                            ?.timestamp | date: "medium"
-                                        }}
-                                      </div>
-                                      <div
-                                        *ngIf="
-                                          !sample?.authorizationInfo ||
-                                          (sample?.authorizationInfo &&
-                                            !sample?.authorizationInfo[0])
-                                        "
-                                      >
-                                        Un-Authorized
-                                      </div>
+                                      <app-authorization-and-result-entry-action-summary
+                                        [sample]="sample"
+                                        [order]="order"
+                                      ></app-authorization-and-result-entry-action-summary>
                                     </td>
                                   </tr>
                                 </ng-container>
@@ -1149,31 +1028,10 @@
                                     }"
                                   >
                                     <td colspan="100%">
-                                      <div
-                                        *ngIf="
-                                          sample?.authorizationInfo &&
-                                          sample?.authorizationInfo[0]
-                                        "
-                                      >
-                                        <b>Authorised By: </b
-                                        >{{
-                                          sample?.authorizationInfo[0]?.name
-                                        }}
-                                        <b class="ml-4">On: </b
-                                        >{{
-                                          sample?.authorizationInfo[0]
-                                            ?.timestamp | date: "medium"
-                                        }}
-                                      </div>
-                                      <div
-                                        *ngIf="
-                                          !sample?.authorizationInfo ||
-                                          (sample?.authorizationInfo &&
-                                            !sample?.authorizationInfo[0])
-                                        "
-                                      >
-                                        Un-Authorized
-                                      </div>
+                                      <app-authorization-and-result-entry-action-summary
+                                        [sample]="sample"
+                                        [order]="order"
+                                      ></app-authorization-and-result-entry-action-summary>
                                     </td>
                                   </tr>
                                 </ng-container>
